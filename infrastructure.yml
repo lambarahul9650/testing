@@ -1,6 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Full VPC + EC2 infrastructure in a single deployable CloudFormation template
 
+Parameters:
+  AMIId:
+    Type: String
+    Default: ami-01938df366ac2d954
+    Description: AMI ID for the EC2 instance (e.g., Ubuntu Server 24.04 LTS)
+
 Resources:
 
   VPC:
@@ -88,16 +94,18 @@ Resources:
   InstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
-      Roles: [!Ref EC2Role]
+      Roles: 
+        - !Ref EC2Role
       Path: /
 
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
-      ImageId: ami-01938df366ac2d954  \
+      ImageId: !Ref AMIId
       SubnetId: !Ref Subnet
-      SecurityGroupIds: [!Ref SecurityGroup]
+      SecurityGroupIds: 
+        - !Ref SecurityGroup
       IamInstanceProfile: !Ref InstanceProfile
       Tags:
         - Key: Name
@@ -119,4 +127,3 @@ Outputs:
   EC2InstanceID:
     Description: EC2 Instance ID
     Value: !Ref EC2Instance
-
